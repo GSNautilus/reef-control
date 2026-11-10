@@ -1,0 +1,30 @@
+# Real device addresses and serials (see config.example.toml)
+config.toml
+
+# Schedule backups, database, logs and the strip's local login
+backups/
+data/
+
+# Matter setup tool: dependencies and the pairing credentials
+tools/matter/node_modules/
+tools/matter/storage/
+*.history
+
+# Private working notes
+PLAN.md
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

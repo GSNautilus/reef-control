@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+httpx
+python-mobius
+python-kasa==0.12.0
+pystray
+Pillow

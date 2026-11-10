@@ -1,0 +1,42 @@
+# Reef Control settings. Copy this file to config.toml and fill in your devices. Restart the dashboard after changing this file.
+
+[server]
+port = 8000
+
+[prime_hd]
+# Wi-Fi Prime HD. Reserve this address in the router so it doesn't change.
+host = "192.168.1.x"
+
+[prime_16hd]
+# Bluetooth Prime 16HD. The address can change; the serial is used to find it again.
+address = "XX:XX:XX:XX:XX:XX"
+serial = "YOUR-16HD-SERIAL"
+
+[live]
+# No longer used: live settings now hold until "Back to schedule" (2026-11-06).
+idle_timeout_seconds = 120
+
+[strip]
+# Tapo P316M power strip: paired over Matter from this PC (tools\matter),
+# controlled locally with python-kasa. Reserve this address in the router.
+host = "192.168.1.y"
+poll_seconds = 5
+# Outlet roles: return, circulation, skimmer, ato. Names can be changed on the page.
+outlets = [
+  { position = 1, role = "return", name = "Return 1" },
+  { position = 2, role = "return", name = "Return 2" },
+  { position = 3, role = "circulation", name = "Circulation 1" },
+  { position = 4, role = "circulation", name = "Circulation 2" },
+  { position = 5, role = "skimmer", name = "Skimmer" },
+  { position = 6, role = "ato", name = "ATO" },
+]
+
+[modes]
+# Starting values; all of these can be changed on the page.
+feed_minutes = 10
+skimmer_delay_minutes = 5
+maintenance_white_percent = 5
+
+[ato]
+long_run_seconds = 120
+runs_factor = 2.0

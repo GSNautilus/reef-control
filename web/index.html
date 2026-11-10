@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reef Control</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="#/">Reef Control</a></h1>
+    <nav class="tabs" id="nav">
+      <a href="#/" data-nav="control">Control</a>
+      <a href="#/power" data-nav="power">Power</a>
+    </nav>
+    <span id="live-badge" class="badge" hidden>Live</span>
+  </header>
+
+  <main>
+   <div id="page-control" class="page" hidden>
+    <section>
+      <div class="section-head">
+        <h2>Control</h2>
+        <span id="control-status" class="muted"></span>
+      </div>
+      <div id="control-warnings" class="warnings" hidden></div>
+      <div id="control-modes" class="panel modes"></div>
+    </section>
+
+    <section class="group">
+      <h3>Lights</h3>
+      <div id="group-lights" class="tiles"></div>
+    </section>
+
+    <section id="control-outlets"></section>
+
+    <section>
+      <details class="panel settings">
+        <summary>Mode settings</summary>
+        <div id="mode-settings" class="settings-grid"></div>
+        <p class="hint">Saved as you change them. Outlet names and the ATO's warnings are on their own pages.</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>Recent events</h2>
+      <div class="panel"><ul id="control-notes" class="notes"></ul></div>
+    </section>
+   </div>
+
+   <div id="page-lights" class="page" hidden>
+    <a class="back" href="#/">&lsaquo; Control</a>
+    <section>
+      <div class="section-head">
+        <h2>Lights</h2>
+        <div class="spacer"></div>
+        <button id="all-on" class="ghost">Both on</button>
+        <button id="all-off" class="ghost">Both off</button>
+        <button id="refresh-status" class="ghost">Refresh</button>
+      </div>
+      <div class="cards">
+        <article class="card" id="card-prime_hd"></article>
+        <article class="card" id="card-prime_16hd"></article>
+      </div>
+      <p class="hint">Off holds a light dark until you turn it back on; on returns it to its schedule.
+        The Prime HD stays off even with this PC off. The 16HD stays off while the dashboard runs, and for about
+        16 hours after it closes, then goes back to its schedule.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Live control</h2>
+        <span id="live-status" class="muted"></span>
+      </div>
+      <div class="panel">
+        <div class="row">
+          <div class="segmented" id="live-targets">
+            <button data-targets="prime_hd,prime_16hd" class="on">Both</button>
+            <button data-targets="prime_hd">Prime HD</button>
+            <button data-targets="prime_16hd">Prime 16HD</button>
+          </div>
+          <div class="spacer"></div>
+          <button id="live-off" class="ghost">All off</button>
+          <button id="live-now" class="ghost">Load current schedule</button>
+          <button id="live-stop" class="danger" disabled>Back to schedule</button>
+        </div>
+        <div id="live-sliders" class="sliders"></div>
+        <p class="hint">Moving a slider takes over the selected lights, and they stay that way until you press
+          "Back to schedule" or use a light's on/off switch, even with this PC off. (The Prime HD holds by itself; the
+          16HD holds for about 16 hours without the dashboard, then goes back to its schedule.)</p>
+        <p id="live-errors" class="error" hidden></p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Schedule</h2>
+        <div class="segmented" id="chart-view">
+          <button data-view="base" class="on">Base</button>
+          <button data-view="prime_hd">Prime HD</button>
+          <button data-view="prime_16hd">Prime 16HD</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div id="chart" class="chart"></div>
+        <div id="legend" class="legend"></div>
+      </div>
+
+      <div class="panel">
+        <div class="row">
+          <h3>Points</h3>
+          <div class="spacer"></div>
+          <button id="add-point" class="ghost">Add point</button>
+          <button id="import-prime_hd" class="ghost">Import from Prime HD</button>
+          <button id="import-prime_16hd" class="ghost">Import from 16HD</button>
+        </div>
+        <div class="table-wrap"><table id="points"></table></div>
+        <p class="hint">Levels in %. Moonlight is used by the Prime 16HD only. Changes save as a draft automatically;
+          nothing reaches the lights until you send it.</p>
+      </div>
+
+      <div class="panel">
+        <div class="row shift-row">
+          <h3>Shift</h3>
+          <label class="shift-input">Move every point by
+            <input id="shift-hours" type="number" min="-12" max="12" step="0.25" value="0"> hours</label>
+          <button id="shift-reset" class="ghost">No shift</button>
+        </div>
+        <p id="shift-effect" class="muted small"></p>
+        <p class="hint">Negative is earlier, e.g. −2 starts the whole schedule two hours earlier. The points above
+          keep their times; the Prime HD and Prime 16HD chart views show the shifted times. Takes effect when you send.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Per-light tweaks</h3>
+        <div id="tweaks" class="tweaks"></div>
+        <p class="hint">Scale multiplies every channel; an offset adds or removes percentage points on one channel.
+          Both only affect channels that are on, so dark periods stay dark.</p>
+      </div>
+
+      <div class="panel send">
+        <div class="row">
+          <span id="draft-state" class="muted"></span>
+          <div class="spacer"></div>
+          <button id="send" class="primary">Send to both lights</button>
+        </div>
+        <div id="send-result"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Dim mode</h2>
+        <span id="dim-status" class="muted"></span>
+      </div>
+      <div class="panel">
+        <div class="row dim-row">
+          <span id="dim-switch"></span>
+          <div class="slider dim-slider">
+            <label for="dim-percent">Lights at</label>
+            <input id="dim-percent" type="range" min="10" max="95" step="5" value="70">
+            <output id="dim-out">70%</output>
+          </div>
+        </div>
+        <p class="hint">Switch it on to run both lights' schedules at the level on the slider, at their usual times.
+          While it's on, moving the slider changes the level on the lights; while it's off, nothing on the lights
+          changes. It's written into the schedules on the lights, so it stays on, even with this PC off, until you
+          switch it off (the 16HD can take up to a minute over Bluetooth).</p>
+        <div id="dim-result"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>History</h2>
+      <div class="panel"><table id="history" class="history"></table></div>
+    </section>
+   </div>
+
+   <div id="page-outlet" class="page" hidden>
+    <a class="back" href="#/">&lsaquo; Control</a>
+    <section id="outlet-head"></section>
+    <section>
+      <div class="section-head">
+        <h2>Power</h2>
+        <div class="segmented" id="outlet-ranges"></div>
+      </div>
+      <div class="panel" id="outlet-chart"></div>
+    </section>
+    <section>
+      <div class="panel">
+        <label class="inline">Name <input id="outlet-name" type="text" maxlength="40"></label>
+        <p class="hint">Saved when you leave the box. Leave it empty to go back to the name in config.toml.</p>
+      </div>
+    </section>
+   </div>
+
+   <div id="page-ato" class="page" hidden>
+    <a class="back" href="#/">&lsaquo; Control</a>
+    <section>
+      <div class="section-head"><h2>ATO</h2></div>
+      <div id="ato-status"></div>
+    </section>
+    <section>
+      <div class="panel" id="ato-charts"></div>
+    </section>
+    <section>
+      <h2>Today's runs</h2>
+      <div class="panel"><ul id="ato-runs" class="notes"></ul></div>
+    </section>
+    <section>
+      <details class="panel settings">
+        <summary>Warnings</summary>
+        <div id="ato-settings" class="settings-grid"></div>
+      </details>
+    </section>
+   </div>
+
+   <div id="page-power" class="page" hidden>
+    <section>
+      <div class="section-head">
+        <h2>Power</h2>
+        <div class="segmented" id="power-spans"></div>
+      </div>
+      <div id="power-body"></div>
+    </section>
+   </div>
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/lights.js"></script>
+  <script src="/static/strip.js"></script>
+  <script src="/static/control.js"></script>
+  <script src="/static/outlet.js"></script>
+  <script src="/static/ato.js"></script>
+  <script src="/static/power.js"></script>
+  <script src="/static/router.js"></script>
+</body>
+</html>

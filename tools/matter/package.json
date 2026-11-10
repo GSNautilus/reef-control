@@ -1,0 +1,8 @@
+{
+  "name": "reef-control-matter",
+  "private": true,
+  "description": "matter.js shell, used to set up the P316M strip over Matter from this PC (no vendor app, no accounts).",
+  "dependencies": {
+    "@matter/nodejs-shell": "0.18.0"
+  }
+}
